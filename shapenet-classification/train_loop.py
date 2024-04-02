@@ -3,7 +3,7 @@ import numpy as np
 import torch
 
 class Trainer:
-    def __init__(self, classifier, train_dataloader, valid_dataloader, optimizer, scheduler, criterion, device, batch_size, epochs):
+    def __init__(self, classifier, train_dataloader, valid_dataloader, optimizer, scheduler, criterion, device, batch_size, epochs, mcc_metric):
         self.classifier = classifier
         self.train_dataloader = train_dataloader
         self.valid_dataloader = valid_dataloader
@@ -16,6 +16,7 @@ class Trainer:
         self.best_mcc = 0.
         self.train_metrics = []
         self.valid_metrics = []
+        self.mcc_metric = mcc_metric
 
     def train_test(self, dataloader, num_batch, epoch, split='train'):
         _loss = []
@@ -40,7 +41,7 @@ class Trainer:
             pred_choice = torch.softmax(preds, dim=1).argmax(dim=1)
             correct = pred_choice.eq(targets.data).cpu().sum()
             accuracy = correct.item() / float(self.batch_size)
-            mcc = mcc_metric(preds, targets)
+            mcc = self.mcc_metric(pred_choice, targets)
 
             _loss.append(loss.item())
             _accuracy.append(accuracy)

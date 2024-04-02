@@ -45,7 +45,7 @@ class Tnet(nn.Module):
 
     def forward(self, x):
         bs = x.shape[0]
-
+        
         # pass through shared MLP layers (conv1d)
         x = self.bn1(F.relu(self.conv1(x)))
         x = self.bn2(F.relu(self.conv2(x)))
