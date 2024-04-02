@@ -1,6 +1,7 @@
 import time
 import numpy as np
 import torch
+import os
 
 class Trainer:
     def __init__(self, classifier, train_dataloader, valid_dataloader, optimizer, scheduler, criterion, device, batch_size, epochs, mcc_metric):
@@ -73,6 +74,9 @@ class Trainer:
         num_train_batch = int(np.ceil(len(self.train_dataloader.dataset) / self.batch_size))
         num_valid_batch = int(np.ceil(len(self.valid_dataloader.dataset) / self.batch_size))
 
+        if not os.path.exists('trained_models'):
+            os.makedirs('trained_models')
+
         for epoch in range(1, self.epochs):
             self.classifier = self.classifier.train()
             _train_metrics = self.train_test(self.train_dataloader, num_train_batch, epoch, split='train')
@@ -89,4 +93,4 @@ class Trainer:
 
             if self.valid_metrics[-1][-1] >= self.best_mcc:
                 self.best_mcc = self.valid_metrics[-1][-1]
-                torch.save(self.classifier.state_dict(), f'trained_models/cls_focal_clr_2/cls_model_{epoch}.pth')
+                torch.save(self.classifier.state_dict(), f'trained_models/cls_model_{epoch}.pth')
